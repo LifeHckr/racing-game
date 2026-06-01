@@ -13,7 +13,7 @@ config_version=5
 config/name="racing-game"
 run/main_scene="uid://bkfdb0ngverj8"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://5nkw8h1idgyy"
 
 [display]
 

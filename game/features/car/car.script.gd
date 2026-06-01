@@ -1,6 +1,7 @@
 class_name CarBase extends CharacterBody3D
 
 @export var input_provider: InputProvider
+@export var body: Node3D
 @export var front_right_wheel: Node3D
 @export var front_left_wheel: Node3D
 @export var floor_cast: ShapeCast3D
@@ -19,6 +20,7 @@ class_name CarBase extends CharacterBody3D
 @export_custom(0, "suffix:m/s") var max_speed_reverse: float = 3
 
 const STICK_TO_LOOP_THRESHOLD: float = 16
+const SILLY_BODY_ROTATION_DAMPENING: float = 1
 
 # Car state properties
 var acceleration := Vector3.ZERO
@@ -56,7 +58,7 @@ func get_gravity_vector() -> Vector3:
 func apply_input(delta: float) -> void:
 	var steer := input_provider.get_steering_axis()
 	steer_angle = lerp(steer_angle, steer * deg_to_rad(steering_limit), delta * steering_speed)
-
+	body.rotate_y(steer_angle/SILLY_BODY_ROTATION_DAMPENING)
 	front_right_wheel.rotation.y = steer_angle
 	front_left_wheel.rotation.y = steer_angle
 
