@@ -60,3 +60,4 @@ steer_right={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+textures/default_filters/anisotropic_filtering_level=3

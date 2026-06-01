@@ -7,7 +7,8 @@ class_name CarBase extends CharacterBody3D
 @export_group("Car Properties")
 @export_custom(0, "suffix:m/s") var gravity = -20
 @export var wheel_base = 0.6
-@export_custom(0, "suffix:m/s") var steering_limit = 10
+@export var steering_limit = 10
+@export var steering_speed = 8
 @export_custom(0, "suffix:m/s") var engine_power = 6
 @export_custom(0, "suffix:m/s") var braking: float = -9
 @export_custom(0, "suffix:m/s") var friction = -2
@@ -28,7 +29,7 @@ func xz(vec: Vector3) -> Vector3:
 func _physics_process(delta: float) -> void:
 	acceleration = Vector3.ZERO
 	if is_on_floor():
-		apply_input()
+		apply_input(delta)
 		apply_friction(delta)
 		calculate_steering(delta)
 	velocity += acceleration * delta
@@ -47,9 +48,9 @@ func get_gravity_vector() -> Vector3:
 	
 	return up_direction * gravity
 
-func apply_input() -> void:
+func apply_input(delta: float) -> void:
 	var steer = input_provider.get_steering_axis()
-	steer_angle = steer * deg_to_rad(steering_limit)
+	steer_angle = lerp(steer_angle, steer * deg_to_rad(steering_limit), delta * steering_speed)
 	
 	front_right_wheel.rotation.y = steer_angle
 	front_left_wheel.rotation.y = steer_angle
