@@ -10,6 +10,7 @@ class_name CarBase extends CharacterBody3D
 
 @export_group("Car Properties")
 @export_custom(0, "suffix:m/s") var gravity: float = -20
+@export_custom(0, "suffix:m/s") var jump_speed: float = 20
 @export_custom(0, "suffix:m") var wheel_base: float = 0.6
 @export_custom(0, "suffix:deg") var steering_limit: float = 10
 @export_custom(0, "suffix:deg/s") var steering_speed: float = 8
@@ -39,8 +40,11 @@ func _physics_process(delta: float) -> void:
 		calculate_steering(delta)
 	velocity += acceleration * delta
 
-	velocity += get_gravity_vector() * delta
-
+	if input_provider.is_jumping() && floor_cast.is_colliding():
+		velocity.y += jump_speed
+	else:
+		velocity += get_gravity_vector() * delta
+	
 	move_and_slide()
 
 	align_with_ground()
