@@ -8,13 +8,14 @@ class_name CarBase extends CharacterBody3D
 @export var rear_ray: ShapeCast3D
 
 @export_group("Car Properties")
-@export_custom(0, "suffix:m/s") var gravity = -20
-@export var wheel_base = 0.6
-@export var steering_limit = 10
+@export_custom(0, "suffix:m/s") var gravity: float = -20
+@export_custom(0, "suffix:m/s") var jump_speed: float = 20
+@export_custom(0, "suffix:m") var wheel_base: float = 0.6
+@export_custom(0, "suffix:deg") var steering_limit: float = 10
 @export var steering_curve: Curve
-@export var steering_min_speed = 8
-@export var steering_speed = 8
-@export_custom(0, "suffix:m/s") var engine_power = 6
+@export_custom(0, "suffix:deg/s") var steering_min_speed = 8
+@export_custom(0, "suffix:deg/s") var steering_speed: float = 8
+@export_custom(0, "suffix:m/s") var engine_power: float = 6
 @export_custom(0, "suffix:m/s") var braking: float = -9
 @export_custom(0, "suffix:m/s") var friction: float = -2
 @export_custom(0, "suffix:m/s²") var drag: float = -2
@@ -42,8 +43,11 @@ func _physics_process(delta: float) -> void:
 		calculate_steering(delta)
 	velocity += acceleration * delta
 
-	velocity += get_gravity_vector() * delta
-
+	if input_provider.is_jumping() && floor_cast.is_colliding():
+		velocity.y += jump_speed
+	else:
+		velocity += get_gravity_vector() * delta
+	
 	move_and_slide()
 
 	align_with_ground()
@@ -64,7 +68,7 @@ func apply_input(delta: float) -> void:
 	if velocity.length() < steering_min_speed:
 		vel_bias = steering_curve.sample(inverse_lerp(0, steering_min_speed, velocity.length()))
 	
-	var steer = input_provider.get_steering_axis()
+	var steer := input_provider.get_steering_axis()
 	steer_angle = lerp(steer_angle, steer * deg_to_rad(steering_limit), delta * steering_speed)
 	steer_angle *= vel_bias
 	
